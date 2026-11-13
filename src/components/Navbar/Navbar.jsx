@@ -13,7 +13,6 @@ import {
 } from "react-icons/fi";
 
 import { useAuth } from "../../context/AuthContext";
-
 import "./Navbar.css";
 
 const countries = [
@@ -29,7 +28,6 @@ const countries = [
 function Navbar({ language = "en", onLanguageChange }) {
   const isArabic = language === "ar";
   const navigate = useNavigate();
-
   const { currentUser, onLogout } = useAuth();
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -38,49 +36,41 @@ function Navbar({ language = "en", onLanguageChange }) {
   const [countryOpen, setCountryOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
 
-  // CART COUNT
   const [cartCount, setCartCount] = useState(() => {
     try {
-      const cart = JSON.parse(
-        localStorage.getItem("gameZoneCart") || "[]"
-      );
-
-      return cart.reduce(
-        (total, item) => total + Number(item.quantity || 1),
-        0
-      );
+      const cart = JSON.parse(localStorage.getItem("gameZoneCart") || "[]");
+      return cart.reduce((total, item) => total + Number(item.quantity || 1), 0);
     } catch {
       return 0;
     }
   });
 
-  // WISHLIST COUNT
   const [wishlistCount, setWishlistCount] = useState(() => {
     try {
-      const wishlist = JSON.parse(
-        localStorage.getItem("gameZoneWishlist") || "[]"
-      );
-
+      const wishlist = JSON.parse(localStorage.getItem("gameZoneWishlist") || "[]");
       return wishlist.length;
     } catch {
       return 0;
     }
   });
 
-  // UPDATE CART COUNT
+  const [selectedCountry, setSelectedCountry] = useState(() => {
+    const savedCountry = localStorage.getItem("gameZoneCountry") || "EG";
+    return countries.some((country) => country.code === savedCountry)
+      ? savedCountry
+      : "EG";
+  });
+
+  const currentCountry =
+    countries.find((country) => country.code === selectedCountry) || countries[0];
+
   useEffect(() => {
     const updateCartCount = () => {
       try {
-        const cart = JSON.parse(
-          localStorage.getItem("gameZoneCart") || "[]"
+        const cart = JSON.parse(localStorage.getItem("gameZoneCart") || "[]");
+        setCartCount(
+          cart.reduce((total, item) => total + Number(item.quantity || 1), 0)
         );
-
-        const count = cart.reduce(
-          (total, item) => total + Number(item.quantity || 1),
-          0
-        );
-
-        setCartCount(count);
       } catch {
         setCartCount(0);
       }
@@ -95,14 +85,10 @@ function Navbar({ language = "en", onLanguageChange }) {
     };
   }, []);
 
-  // UPDATE WISHLIST COUNT
   useEffect(() => {
     const updateWishlistCount = () => {
       try {
-        const wishlist = JSON.parse(
-          localStorage.getItem("gameZoneWishlist") || "[]"
-        );
-
+        const wishlist = JSON.parse(localStorage.getItem("gameZoneWishlist") || "[]");
         setWishlistCount(wishlist.length);
       } catch {
         setWishlistCount(0);
@@ -118,25 +104,8 @@ function Navbar({ language = "en", onLanguageChange }) {
     };
   }, []);
 
-  // COUNTRY
-  const [selectedCountry, setSelectedCountry] = useState(() => {
-    const savedCountry = localStorage.getItem("gameZoneCountry") || "EG";
+  const closeMenu = () => setMenuOpen(false);
 
-    return countries.some((country) => country.code === savedCountry)
-      ? savedCountry
-      : "EG";
-  });
-
-  const currentCountry =
-    countries.find((country) => country.code === selectedCountry) ||
-    countries[0];
-
-  // CLOSE MOBILE MENU
-  const closeMenu = () => {
-    setMenuOpen(false);
-  };
-
-  // LOGOUT
   const handleLogout = () => {
     onLogout();
     setAccountOpen(false);
@@ -144,7 +113,6 @@ function Navbar({ language = "en", onLanguageChange }) {
     navigate("/");
   };
 
-  // SEARCH TOGGLE
   const toggleSearch = () => {
     setSearchOpen((prev) => !prev);
     setCountryOpen(false);
@@ -152,34 +120,27 @@ function Navbar({ language = "en", onLanguageChange }) {
     closeMenu();
   };
 
-  // COUNTRY SELECT
   const handleCountrySelect = (countryCode) => {
     setSelectedCountry(countryCode);
     localStorage.setItem("gameZoneCountry", countryCode);
     setCountryOpen(false);
   };
 
-  // SEARCH GAMES
   const handleSearch = (e) => {
     e.preventDefault();
-
     const query = searchValue.trim();
 
     if (!query) return;
 
     navigate(`/store?search=${encodeURIComponent(query)}`);
-
     setSearchOpen(false);
     setSearchValue("");
     closeMenu();
   };
 
-  // LANGUAGE
   const toggleLanguage = () => {
     const newLanguage = isArabic ? "en" : "ar";
-
     onLanguageChange?.(newLanguage);
-
     closeMenu();
     setCountryOpen(false);
     setSearchOpen(false);
@@ -187,49 +148,37 @@ function Navbar({ language = "en", onLanguageChange }) {
   };
 
   return (
-    <header className="navbar">
-
-      {/* LOGO */}
+    <header className="navbar" dir={isArabic ? "rtl" : "ltr"}>
       <Link to="/" className="nav-logo" onClick={closeMenu}>
         GAME <span>ZONE</span>
       </Link>
 
-      {/* MOBILE MENU BUTTON */}
       <button
         className="menu-toggle"
         onClick={() => setMenuOpen((prev) => !prev)}
-        aria-label="Toggle menu"
+        aria-label={isArabic ? "فتح القائمة" : "Toggle menu"}
+        aria-expanded={menuOpen}
       >
         {menuOpen ? <FiX /> : <FiMenu />}
       </button>
 
-      {/* NAVIGATION LINKS */}
       <nav className={`nav-links ${menuOpen ? "active" : ""}`}>
-
         <Link to="/" onClick={closeMenu}>
           {isArabic ? "الرئيسية" : "Home"}
         </Link>
-
         <Link to="/store" onClick={closeMenu}>
           {isArabic ? "المتجر" : "Store"}
         </Link>
-
         <Link to="/store?platform=pc" onClick={closeMenu}>
           {isArabic ? "ألعاب الكمبيوتر" : "PC Games"}
         </Link>
-
         <Link to="/store?platform=playstation" onClick={closeMenu}>
           {isArabic ? "بلايستيشن" : "PlayStation"}
         </Link>
-
       </nav>
 
-      {/* NAV ACTIONS */}
       <div className="nav-actions">
-
-        {/* COUNTRY */}
         <div className="country-selector">
-
           <button
             className={`country-toggle ${countryOpen ? "active" : ""}`}
             onClick={() => {
@@ -241,18 +190,11 @@ function Navbar({ language = "en", onLanguageChange }) {
             aria-label={isArabic ? "اختيار الدولة" : "Choose country"}
             aria-expanded={countryOpen}
           >
-            <span className="country-current-flag">
-              {currentCountry.flag}
-            </span>
-
+            <span className="country-current-flag">{currentCountry.flag}</span>
             <FiChevronDown className="country-arrow" />
           </button>
 
-          <div
-            className={`country-dropdown ${
-              countryOpen ? "country-dropdown-active" : ""
-            }`}
-          >
+          <div className={`country-dropdown ${countryOpen ? "country-dropdown-active" : ""}`}>
             <p className="country-dropdown-title">
               {isArabic ? "اختر الدولة" : "SELECT COUNTRY"}
             </p>
@@ -260,28 +202,19 @@ function Navbar({ language = "en", onLanguageChange }) {
             {countries.map((country) => (
               <button
                 key={country.code}
-                className={`country-option ${
-                  selectedCountry === country.code ? "selected" : ""
-                }`}
+                className={`country-option ${selectedCountry === country.code ? "selected" : ""}`}
                 onClick={() => handleCountrySelect(country.code)}
               >
-                <span className="country-option-flag">
-                  {country.flag}
-                </span>
-
+                <span className="country-option-flag">{country.flag}</span>
                 <span className="country-option-name">
                   {isArabic ? country.arName : country.name}
                 </span>
-
-                <span className="country-currency">
-                  {country.currency}
-                </span>
+                <span className="country-currency">{country.currency}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* LANGUAGE */}
         <button
           className="language-toggle"
           onClick={toggleLanguage}
@@ -290,7 +223,6 @@ function Navbar({ language = "en", onLanguageChange }) {
           {isArabic ? "EN" : "AR"}
         </button>
 
-        {/* SEARCH */}
         <button
           className={`nav-icon search-toggle ${searchOpen ? "active" : ""}`}
           onClick={toggleSearch}
@@ -300,7 +232,6 @@ function Navbar({ language = "en", onLanguageChange }) {
           {searchOpen ? <FiX /> : <FiSearch />}
         </button>
 
-        {/* WISHLIST */}
         <Link
           to="/wishlist"
           className="nav-icon wishlist-icon"
@@ -311,7 +242,6 @@ function Navbar({ language = "en", onLanguageChange }) {
           <small>{wishlistCount}</small>
         </Link>
 
-        {/* CART */}
         <Link
           to="/cart"
           className="nav-icon cart-icon"
@@ -322,14 +252,10 @@ function Navbar({ language = "en", onLanguageChange }) {
           <small>{cartCount}</small>
         </Link>
 
-        {/* ACCOUNT */}
         {currentUser ? (
           <div className="account-menu">
-
             <button
-              className={`account-toggle ${
-                accountOpen ? "active" : ""
-              }`}
+              className={`account-toggle ${accountOpen ? "active" : ""}`}
               onClick={() => {
                 setAccountOpen((prev) => !prev);
                 setCountryOpen(false);
@@ -339,75 +265,42 @@ function Navbar({ language = "en", onLanguageChange }) {
               aria-expanded={accountOpen}
             >
               <FiUser className="account-user-icon" />
-
-              <span className="account-user-name">
-                {currentUser.name}
-              </span>
-
+              <span className="account-user-name">{currentUser.name}</span>
               <FiChevronDown className="account-arrow" />
             </button>
 
-            <div
-              className={`account-dropdown ${
-                accountOpen ? "account-dropdown-active" : ""
-              }`}
-            >
+            <div className={`account-dropdown ${accountOpen ? "account-dropdown-active" : ""}`}>
               <div className="account-info">
-
-                <div className="account-avatar">
-                  <FiUser />
-                </div>
-
+                <div className="account-avatar"><FiUser /></div>
                 <div>
                   <strong>{currentUser.name}</strong>
                   <span>{currentUser.email}</span>
                 </div>
-
               </div>
 
               <div className="account-divider"></div>
 
-              <button
-                className="logout-btn"
-                onClick={handleLogout}
-              >
+              <button className="logout-btn" onClick={handleLogout}>
                 <FiLogOut />
                 {isArabic ? "تسجيل الخروج" : "LOG OUT"}
               </button>
             </div>
-
           </div>
         ) : (
           <div className="auth-buttons">
-
-            <Link
-              to="/login"
-              className="login-btn"
-              onClick={closeMenu}
-            >
+            <Link to="/login" className="login-btn" onClick={closeMenu}>
               {isArabic ? "تسجيل الدخول" : "SIGN IN"}
             </Link>
-
-            <Link
-              to="/register"
-              className="register-btn"
-              onClick={closeMenu}
-            >
+            <Link to="/register" className="register-btn" onClick={closeMenu}>
               {isArabic ? "إنشاء حساب" : "JOIN US"}
             </Link>
-
           </div>
         )}
-
       </div>
 
-      {/* SEARCH PANEL */}
       <div className={`search-panel ${searchOpen ? "search-active" : ""}`}>
-
         <form className="search-form" onSubmit={handleSearch}>
-
           <FiSearch className="search-input-icon" />
-
           <input
             type="text"
             placeholder={
@@ -418,15 +311,11 @@ function Navbar({ language = "en", onLanguageChange }) {
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
-
           <button type="submit" className="search-submit">
             {isArabic ? "بحث" : "SEARCH"}
           </button>
-
         </form>
-
       </div>
-
     </header>
   );
 }
