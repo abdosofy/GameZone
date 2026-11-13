@@ -11,8 +11,6 @@ import {
   FaTag,
   FaPhone,
 } from "react-icons/fa";
-
-import Navbar from "../../Navbar/Navbar";
 import "./Checkout.css";
 
 function Checkout({ language, onLanguageChange }) {
@@ -192,10 +190,6 @@ function Checkout({ language, onLanguageChange }) {
   return (
     <div className="checkout-page">
 
-      <Navbar
-        language={language}
-        onLanguageChange={onLanguageChange}
-      />
 
       <div className="checkout-container">
 
