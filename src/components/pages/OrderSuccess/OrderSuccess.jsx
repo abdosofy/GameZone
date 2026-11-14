@@ -7,7 +7,7 @@ import {
   FaReceipt,
 } from "react-icons/fa";
 
-import Navbar from "../../Navbar/Navbar";
+
 import "./OrderSuccess.css";
 
 function OrderSuccess({ language, onLanguageChange }) {
@@ -61,10 +61,6 @@ function OrderSuccess({ language, onLanguageChange }) {
 
   return (
     <div className="order-success-page">
-      <Navbar
-        language={language}
-        onLanguageChange={onLanguageChange}
-      />
 
       <main className="order-success-container">
         <div className="success-animation">
