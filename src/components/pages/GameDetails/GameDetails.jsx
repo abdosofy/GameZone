@@ -80,7 +80,6 @@ function GameDetails({ language, onLanguageChange }) {
     return (
       <main className="game-details-page">
 
-
         <div className="game-not-found">
           <h2>
             {isArabic
@@ -212,10 +211,6 @@ function GameDetails({ language, onLanguageChange }) {
 
   return (
     <main className="game-details-page">
-      <Navbar
-        language={language}
-        onLanguageChange={onLanguageChange}
-      />
 
       {/* Cinematic Hero */}
       <section className="game-cinematic-hero">
