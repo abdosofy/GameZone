@@ -10,7 +10,7 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 
-import Navbar from "../../Navbar/Navbar";
+
 import { getGames } from "../../../data/games";
 
 import "./GameDetails.css";
@@ -79,10 +79,7 @@ function GameDetails({ language, onLanguageChange }) {
   if (!game) {
     return (
       <main className="game-details-page">
-        <Navbar
-          language={language}
-          onLanguageChange={onLanguageChange}
-        />
+
 
         <div className="game-not-found">
           <h2>
